@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upiórna Ruletka Europejska - Halloween Edition</title>
+    <!-- Tailwind CSS dla sprawnego układu -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome i Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pumpkin: #ff7518;
+            --purple-spooky: #4a0e4e;
+            --toxic-green: #39ff14;
+            --blood-red: #8b0000;
+            --dark-void: #0d0914;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark-void);
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(74, 14, 78, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(255, 117, 24, 0.15) 0%, transparent 50%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .creepster-font {
+            font-family: 'Creepster', cursive;
+        }
+
+        /* Stylizacja Koła Ruletki (Canvas) */
+        #wheel-container {
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 117, 24, 0.25), inset 0 0 30px rgba(0,0,0,0.8);
+            border-radius: 50%;
+            border: 8px solid #2a1138;
+        }
+
+        /* Stoły i pola zakładów */
+        .bet-grid {
+            display: grid;
+            grid-template-columns: 40px repeat(12, 1fr) 50px;
+            grid-template-rows: repeat(3, 48px) 45px 45px;
+            gap: 2px;
+            background-color: #1a0b2e;
+            padding: 8px;
+            border-radius: 12px;
+            border: 2px solid #ff751855;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 117, 24, 0.15);
+            user-select: none;
+        }
+
+        .bet-cell {
+            background-color: #26133d;
+            border: 1px solid rgba(255, 117, 24, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .bet-cell:hover {
+            background-color: #3b1c5c;
+            border-color: var(--pumpkin);
+            box-shadow: inset 0 0 10px rgba(255, 117, 24, 0.5);
+            z-index: 5;
+        }
+
+        .bet-cell.num-red { color: #ff4d4d; }
+        .bet-cell.num-black { color: #d1d5db; }
+        .bet-cell.num-green { color: var(--toxic-green); }
+
+        /* Żetony hazardowe Halloween */
+        .chip {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #fff;
+            border: 2px dashed #ffffff88;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 0 6px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+
+        .chip:hover {
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.8), 0 0 12px var(--pumpkin);
+        }
+
+        .chip.active {
+            transform: translateY(-6px) scale(1.12);
+            border-style: solid;
+            border-color: var(--toxic-green);
+            box-shadow: 0 0 15px var(--toxic-green);
+        }
+
+        .chip-10 { background: radial-gradient(circle, #ff7518, #993d00); }
+        .chip-25 { background: radial-gradient(circle, #8b5cf6, #4c1d95); }
+        .chip-50 { background: radial-gradient(circle, #10b981, #047857); }
+        .chip-100 { background: radial-gradient(circle, #ef4444, #991b1b); }
+        .chip-500 { background: radial-gradient(circle, #f59e0b, #78350f); }
+
+        /* Nałożone żetony na stół */
+        .placed-chip {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--pumpkin), #803000);
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 9px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 10;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Mgła Halloween w tle */
+        .fog-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            background: url('https://raw.githubusercontent.com/danielgindi/d3-flame-graph/master/example/fog.png') repeat-x;
+            animation: fogMove 60s linear infinite;
+        }
+
+        @keyframes fogMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* Niestandardowy Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0d0914; }
+        ::-webkit-scrollbar-thumb { background: #3b1c5c; border-radius: 4px; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative">
+
+    <div class="fog-container"></div>
+
+    <!-- Pasek Górny / Nagłówek -->
+    <header class="relative z-10 bg-black/50 border-b border-orange-500/20 backdrop-blur-md px-6 py-4 flex flex-wrap justify-between items-center">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-jack-o-lantern text-3xl text-orange-500 animate-pulse"></i>
+            <h1 class="text-3xl font-bold creepster-font tracking-wider text-orange-500 drop-shadow-[0_2px_8px_rgba(255,117,24,0.6)]">
+                Upiorna Ruletka Europejska
+            </h1>
+            <a href="Charity Halloween Banquet.html" class="charity">🎃 Powrót do strony👻</a>
+        </div>
+
+        <div class="flex items-center gap-6 mt-2 sm:mt-0">
+            <div class="bg-purple-950/80 border border-purple-500/30 px-4 py-2 rounded-xl flex items-center gap-3">
+                <i class="fa-solid fa-coins text-yellow-400 text-lg"></i>
+                <div>
+                    <div class="text-xs text-purple-300">Stan Konta</div>
+                    <div id="bankroll-display" class="text-xl font-bold text-green-400">1 000 PLN</div>
+                </div>
+            </div>
+
+            <div class="bg-purple-950/80 border border-purple-500/30 px-4 py-2 rounded-xl flex items-center gap-3">
+                <i class="fa-solid fa-ghost text-orange-400 text-lg"></i>
+                <div>
+                    <div class="text-xs text-purple-300">Suma Zakładów</div>
+                    <div id="total-bet-display" class="text-xl font-bold text-orange-400">0 PLN</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Główny kontener gry -->
+    <main class="relative z-10 flex-grow container mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center">
+
+        <!-- Koło Ruletki i Wskaźnik -->
+        <div class="flex flex-col items-center gap-4">
+            <div class="relative flex items-center justify-center">
+                <!-- Wskaźnik wylosowanego pola -->
+                <div class="absolute -top-3 z-20 text-orange-500 text-2xl drop-shadow-[0_0_8px_#ff7518]">
+                    <i class="fa-solid fa-caret-down"></i>
+                </div>
+                
+                <div id="wheel-container" class="bg-slate-900 p-2">
+                    <canvas id="roulette-wheel" width="360" height="360"></canvas>
+                </div>
+            </div>
+
+            <!-- Ostatnie Wygrane Numery -->
+            <div class="w-full bg-purple-950/40 border border-purple-800/40 p-3 rounded-xl">
+                <div class="text-xs text-purple-300 mb-2 flex justify-between items-center">
+                    <span>Ostatnie wyniki:</span>
+                    <i class="fa-solid fa-skull text-xs opacity-50"></i>
+                </div>
+                <div id="history-container" class="flex gap-2 overflow-x-auto py-1 min-h-[36px]">
+                    <span class="text-xs text-gray-500 italic">Brak rozegranych rund</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stół do Betowania i Panel Sterowania -->
+        <div class="flex flex-col gap-6 w-full max-w-2xl">
+
+            <!-- Wybór Nominalu Żetonów -->
+            <div class="bg-purple-950/30 border border-purple-800/30 p-4 rounded-xl flex items-center justify-between flex-wrap gap-4">
+                <span class="text-sm font-semibold text-purple-200 flex items-center gap-2">
+                    <i class="fa-solid fa-spider text-orange-400"></i> Wybierz żeton:
+                </span>
+                <div class="flex gap-3">
+                    <div class="chip chip-10 active" data-value="10"><i class="fa-solid fa-bat text-[10px] mr-0.5"></i>10</div>
+                    <div class="chip chip-25" data-value="25"><i class="fa-solid fa-crow text-[10px] mr-0.5"></i>25</div>
+                    <div class="chip chip-50" data-value="50"><i class="fa-solid fa-ghost text-[10px] mr-0.5"></i>50</div>
+                    <div class="chip chip-100" data-value="100"><i class="fa-solid fa-skull text-[10px] mr-0.5"></i>100</div>
+                    <div class="chip chip-500" data-value="500"><i class="fa-solid fa-wand-magic-sparkles text-[10px] mr-0.5"></i>500</div>
+                </div>
+            </div>
+
+            <!-- Stół Zakładów (Grid) -->
+            <div class="overflow-x-auto pb-2">
+                <div class="bet-grid min-w-[580px]">
+                    <!-- Pole Zero (0) -->
+                    <div class="bet-cell num-green hover:bg-green-950" style="grid-column: 1; grid-row: 1 / span 3;" data-type="straight" data-selection="0">
+                        0
+                    </div>
+
+                    <!-- Numery 1-36 (Generowane w JS w układzie 3 rzędów x 12 kolumn) -->
+                    <!-- Rząd 3 (Górny): 3, 6, 9 ... 36 -->
+                    <!-- Rząd 2 (Środkowy): 2, 5, 8 ... 35 -->
+                    <!-- Rząd 1 (Dolny): 1, 4, 7 ... 34 -->
+
+                    <!-- Kolumny (Outside Bets) po prawej stronie -->
+                    <div class="bet-cell text-xs text-purple-300" style="grid-column: 14; grid-row: 1;" data-type="column" data-selection="3">2:1</div>
+                    <div class="bet-cell text-xs text-purple-300" style="grid-column: 14; grid-row: 2;" data-type="column" data-selection="2">2:1</div>
+                    <div class="bet-cell text-xs text-purple-300" style="grid-column: 14; grid-row: 3;" data-type="column" data-selection="1">2:1</div>
+
+                    <!-- Tuziny (Dozens) -->
+                    <div class="bet-cell text-xs text-purple-200" style="grid-column: 2 / span 4; grid-row: 4;" data-type="dozen" data-selection="1">1. Tuzin (1-12)</div>
+                    <div class="bet-cell text-xs text-purple-200" style="grid-column: 6 / span 4; grid-row: 4;" data-type="dozen" data-selection="2">2. Tuzin (13-24)</div>
+                    <div class="bet-cell text-xs text-purple-200" style="grid-column: 10 / span 4; grid-row: 4;" data-type="dozen" data-selection="3">3. Tuzin (25-36)</div>
+
+                    <!-- Zakłady Zewnętrzne (Outside Bets 1:1) -->
+                    <div class="bet-cell text-xs" style="grid-column: 2 / span 2; grid-row: 5;" data-type="low_high" data-selection="low">1-18</div>
+                    <div class="bet-cell text-xs" style="grid-column: 4 / span 2; grid-row: 5;" data-type="even_odd" data-selection="even">Parzyste</div>
+                    <div class="bet-cell text-xs bg-red-950/60 text-red-400 border-red-800/50" style="grid-column: 6 / span 2; grid-row: 5;" data-type="color" data-selection="red">Czerwone</div>
+                    <div class="bet-cell text-xs bg-gray-950/80 text-gray-300 border-gray-700/50" style="grid-column: 8 / span 2; grid-row: 5;" data-type="color" data-selection="black">Czarne</div>
+                    <div class="bet-cell text-xs" style="grid-column: 10 / span 2; grid-row: 5;" data-type="even_odd" data-selection="odd">Nieparzyste</div>
+                    <div class="bet-cell text-xs" style="grid-column: 12 / span 2; grid-row: 5;" data-type="low_high" data-selection="high">19-36</div>
+                </div>
+            </div>
+
+            <!-- Przyciski Akcji -->
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex gap-2">
+                    <button id="clear-btn" class="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold text-sm transition flex items-center gap-2 border border-gray-600">
+                        <i class="fa-solid fa-trash-can"></i> Wyczyść
+                    </button>
+                    <button id="double-btn" class="px-4 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-800 text-purple-200 font-semibold text-sm transition flex items-center gap-2 border border-purple-600">
+                        <i class="fa-solid fa-angles-up"></i> x2 Podwój
+                    </button>
+                </div>
+
+                <button id="spin-btn" class="px-8 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-extrabold text-lg shadow-[0_0_20px_rgba(255,117,24,0.5)] transition transform active:scale-95 flex items-center gap-3">
+                    <i class="fa-solid fa-rotate text-xl"></i> ZAKRĘĆ KOŁEM!
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Wyniku / Komunikat -->
+    <div id="result-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-gradient-to-b from-purple-950 to-slate-950 border-2 border-orange-500/50 p-8 rounded-2xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(255,117,24,0.3)] relative transform scale-95 transition-transform duration-300" id="modal-content">
+            <div id="modal-icon" class="text-5xl mb-3 text-orange-500">
+                <i class="fa-solid fa-skull-crossbones"></i>
+            </div>
+            <h2 id="modal-title" class="text-2xl font-bold creepster-font text-orange-400 tracking-wider mb-1">
+                Wynik Losowania
+            </h2>
+            <div id="modal-number" class="text-6xl font-black my-4">
+                0
+            </div>
+            <div id="modal-payout" class="text-lg font-bold mb-6 text-green-400">
+                Wygrana: 0 PLN
+            </div>
+            <button id="close-modal-btn" class="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg transition">
+                Graj Dalej
+            </button>
+        </div>
+    </div>
+
+    <!-- LOGIKA GRY W JAVASCRIPT -->
+    <script>
+        /**
+         * 1. MODUŁ LOGIKI RULETKI EUROPEJSKIEJ (Silnik Zgodny ze Specyfikacją)
+         */
+        class EuropeanRoulette {
+            constructor() {
+                // Sekwencja numerów na kole (zgodnie z ruchem wskazówek zegara)
+                this.WHEEL_SEQUENCE = [
+                    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5,
+                    24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
+                ];
+
+                // Kolory liczb
+                this.NUMBER_COLORS = {
+                    0: 'green',
+                    1: 'black', 2: 'red', 3: 'black', 4: 'black', 5: 'red', 6: 'black',
+                    7: 'red', 8: 'black', 9: 'red', 10: 'black', 11: 'black', 12: 'red',
+                    13: 'black', 14: 'red', 15: 'black', 16: 'red', 17: 'black', 18: 'red',
+                    19: 'red', 20: 'black', 21: 'red', 22: 'black', 23: 'red', 24: 'black',
+                    25: 'red', 26: 'black', 27: 'red', 28: 'black', 29: 'black', 30: 'red',
+                    31: 'black', 32: 'red', 33: 'black', 34: 'red', 35: 'black', 36: 'red'
+                };
+
+                // Kolumny
+                this.COLUMNS = {
+                    1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34],
+                    2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+                    3: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]
+                };
+            }
+
+            // Losowanie wyniku (1/37 prawdopodobieństwo)
+            spinWheel() {
+                const randomIndex = Math.floor(Math.random() * this.WHEEL_SEQUENCE.length);
+                const winningNumber = this.WHEEL_SEQUENCE[randomIndex];
+                const winningColor = this.NUMBER_COLORS[winningNumber];
+                return { winningNumber, winningColor, index: randomIndex };
+            }
+
+            // Rozliczenie pojedynczego zakładu
+            evaluateBet(bet, winningNumber, winningColor) {
+                const { type, selection, amount } = bet;
+
+                // Specjalna Reguła Zera (0): Zakłady zewnętrzne automatycznie przegrywają przy 0
+                if (winningNumber === 0) {
+                    const outsideBetTypes = ['color', 'even_odd', 'low_high', 'dozen', 'column'];
+                    if (outsideBetTypes.includes(type)) {
+                        return 0;
+                    }
+                }
+
+                let isWin = false;
+                let multiplier = 0;
+
+                switch (type) {
+                    // --- ZAKŁADY WEWNĘTRZNE ---
+                    case 'straight':
+                        if (Number(selection) === winningNumber) { isWin = true; multiplier = 35; }
+                        break;
+                    case 'split':
+                        if (Array.isArray(selection) && selection.includes(winningNumber)) { isWin = true; multiplier = 17; }
+                        break;
+                    case 'street':
+                        if (Array.isArray(selection) && selection.includes(winningNumber)) { isWin = true; multiplier = 11; }
+                        break;
+                    case 'corner':
+                        if (Array.isArray(selection) && selection.includes(winningNumber)) { isWin = true; multiplier = 8; }
+                        break;
+                    case 'six_line':
+                        if (Array.isArray(selection) && selection.includes(winningNumber)) { isWin = true; multiplier = 5; }
+                        break;
+
+                    // --- ZAKŁADY ZEWNĘTRZNE ---
+                    case 'color':
+                        if (selection === winningColor) { isWin = true; multiplier = 1; }
+                        break;
+                    case 'even_odd':
+                        if (winningNumber !== 0) {
+                            if (selection === 'even' && winningNumber % 2 === 0) isWin = true;
+                            if (selection === 'odd' && winningNumber % 2 !== 0) isWin = true;
+                            if (isWin) multiplier = 1;
+                        }
+                        break;
+                    case 'low_high':
+                        if (selection === 'low' && winningNumber >= 1 && winningNumber <= 18) isWin = true;
+                        if (selection === 'high' && winningNumber >= 19 && winningNumber <= 36) isWin = true;
+                        if (isWin) multiplier = 1;
+                        break;
+                    case 'dozen':
+                        const doz = Number(selection);
+                        if (doz === 1 && winningNumber >= 1 && winningNumber <= 12) isWin = true;
+                        if (doz === 2 && winningNumber >= 13 && winningNumber <= 24) isWin = true;
+                        if (doz === 3 && winningNumber >= 25 && winningNumber <= 36) isWin = true;
+                        if (isWin) multiplier = 2;
+                        break;
+                    case 'column':
+                        const col = Number(selection);
+                        if (this.COLUMNS[col] && this.COLUMNS[col].includes(winningNumber)) { isWin = true; multiplier = 2; }
+                        break;
+                }
+
+                // Wartość wypłaty = Stawka * Mnożnik + Zwrot stawki
+                return isWin ? (amount * multiplier) + amount : 0;
+            }
+
+            // Rozliczenie pełnej rundy
+            playRound(bets, forcedWinningNumber = null) {
+                let spinResult;
+                if (forcedWinningNumber !== null) {
+                    const idx = this.WHEEL_SEQUENCE.indexOf(forcedWinningNumber);
+                    spinResult = { winningNumber: forcedWinningNumber, winningColor: this.NUMBER_COLORS[forcedWinningNumber], index: idx };
+                } else {
+                    spinResult = this.spinWheel();
+                }
+
+                let totalPayout = 0;
+                bets.forEach(bet => {
+                    totalPayout += this.evaluateBet(bet, spinResult.winningNumber, spinResult.winningColor);
+                });
+
+                return {
+                    winningNumber: spinResult.winningNumber,
+                    winningColor: spinResult.winningColor,
+                    winningIndex: spinResult.index,
+                    totalPayout
+                };
+            }
+        }
+
+        /**
+         * 2. INTERFEJS UŻYTKOWNIKA I RYSOWANIE KOŁA (Canvas & UI)
+         */
+        const gameEngine = new EuropeanRoulette();
+        
+        let bankroll = 1000;
+        let selectedChipValue = 10;
+        let currentBets = []; // Tablica obiektów: { type, selection, amount, element }
+        let isSpinning = false;
+        let currentWheelRotation = 0;
+
+        // Inicjalizacja Po Załadowaniu
+        window.onload = () => {
+            buildBettingTable();
+            drawWheel();
+            setupEventListeners();
+            updateUI();
+        };
+
+        // Generowanie numerów 1-36 na stole
+        function buildBettingTable() {
+            const grid = document.querySelector('.bet-grid');
+            
+            // Tworzenie pól dla liczb 1-36 w układzie ruletki (3 rzędy, 12 kolumn)
+            for (let col = 0; col < 12; col++) {
+                for (let row = 3; row >= 1; row--) {
+                    const num = col * 3 + row;
+                    const color = gameEngine.NUMBER_COLORS[num];
+                    
+                    const cell = document.createElement('div');
+                    cell.className = `bet-cell num-${color}`;
+                    cell.style.gridColumn = col + 2; // +2 bo kolumna 1 to Zero
+                    cell.style.gridRow = 4 - row;   // Rząd 3 na samej górze (grid-row 1)
+                    cell.textContent = num;
+                    cell.dataset.type = 'straight';
+                    cell.dataset.selection = num;
+
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // Rysowanie Koła Ruletki na Canvas
+        const canvas = document.getElementById('roulette-wheel');
+        const ctx = canvas.getContext('2d');
+
+        function drawWheel() {
+            const numSlices = gameEngine.WHEEL_SEQUENCE.length;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+            const radius = canvas.width / 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(radius, radius);
+            ctx.rotate(currentWheelRotation);
+
+            for (let i = 0; i < numSlices; i++) {
+                const number = gameEngine.WHEEL_SEQUENCE[i];
+                const color = gameEngine.NUMBER_COLORS[number];
+                const angle = i * sliceAngle;
+
+                // Tło wycinka
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius - 10, angle, angle + sliceAngle);
+                ctx.fillStyle = color === 'green' ? '#10b981' : (color === 'red' ? '#b91c1c' : '#1e1b4b');
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#ff751844';
+                ctx.stroke();
+
+                // Numery
+                ctx.save();
+                ctx.rotate(angle + sliceAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 13px Outfit";
+                ctx.fillText(number.toString(), radius - 20, 4);
+                ctx.restore();
+            }
+
+            // Oś środkowa koła (Pajęczyna/Oz do Halloween)
+            ctx.beginPath();
+            ctx.arc(0, 0, radius - 75, 0, 2 * Math.PI);
+            ctx.fillStyle = '#0d0914';
+            ctx.fill();
+            ctx.strokeStyle = '#ff7518';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Czaszka w centrum
+            ctx.fillStyle = '#ff7518';
+            ctx.font = '24px "Font Awesome 6 Free"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('\uf54c', 0, 0); // Ikona czaszki
+
+            ctx.restore();
+        }
+
+        // Obsługa Zdarzeń
+        function setupEventListeners() {
+            // Wybór nominalu żetonu
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    const target = e.currentTarget;
+                    target.classList.add('active');
+                    selectedChipValue = Number(target.dataset.value);
+                });
+            });
+
+            // Kliknięcie w pole na stole (stawianie zakładu)
+            document.querySelector('.bet-grid').addEventListener('click', (e) => {
+                const cell = e.target.closest('.bet-cell');
+                if (!cell || isSpinning) return;
+
+                const type = cell.dataset.type;
+                const selection = cell.dataset.selection;
+
+                placeBet(type, selection, cell);
+            });
+
+            // Przycisk Zakręć
+            document.getElementById('spin-btn').addEventListener('click', spin);
+
+            // Przycisk Wyczyść
+            document.getElementById('clear-btn').addEventListener('click', clearBets);
+
+            // Przycisk Podwój
+            document.getElementById('double-btn').addEventListener('click', doubleBets);
+
+            // Zamknięcie modalu
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        }
+
+        // Stawianie Zakładu
+        function placeBet(type, selection, cellElement) {
+            const totalCurrentBet = getTotalBetAmount();
+            if (bankroll < totalCurrentBet + selectedChipValue) {
+                showToast("Brak wystarczających środków na koncie!");
+                return;
+            }
+
+            // Szukamy czy ten zakład już istnieje
+            let existingBet = currentBets.find(b => b.type === type && String(b.selection) === String(selection));
+
+            if (existingBet) {
+                existingBet.amount += selectedChipValue;
+            } else {
+                existingBet = {
+                    type,
+                    selection: isNaN(selection) ? selection : Number(selection),
+                    amount: selectedChipValue,
+                    cellElement
+                };
+                currentBets.push(existingBet);
+            }
+
+            updatePlacedChipsUI();
+            updateUI();
+        }
+
+        // Aktualizacja żetonów graficznych na stole
+        function updatePlacedChipsUI() {
+            // Usuń starych żetonów ze stołu
+            document.querySelectorAll('.placed-chip').forEach(el => el.remove());
+
+            currentBets.forEach(bet => {
+                const chipEl = document.createElement('div');
+                chipEl.className = 'placed-chip';
+                chipEl.textContent = bet.amount >= 1000 ? (bet.amount/1000) + 'k' : bet.amount;
+                bet.cellElement.appendChild(chipEl);
+            });
+        }
+
+        function getTotalBetAmount() {
+            return currentBets.reduce((sum, b) => sum + b.amount, 0);
+        }
+
+        function clearBets() {
+            if (isSpinning) return;
+            currentBets = [];
+            updatePlacedChipsUI();
+            updateUI();
+        }
+
+        function doubleBets() {
+            if (isSpinning || currentBets.length === 0) return;
+            const totalBet = getTotalBetAmount();
+            if (bankroll < totalBet * 2) {
+                showToast("Brak środków na podwojenie!");
+                return;
+            }
+
+            currentBets.forEach(b => b.amount *= 2);
+            updatePlacedChipsUI();
+            updateUI();
+        }
+
+        function updateUI() {
+            const totalBet = getTotalBetAmount();
+            document.getElementById('bankroll-display').textContent = `${(bankroll - totalBet).toLocaleString('pl-PL')} PLN`;
+            document.getElementById('total-bet-display').textContent = `${totalBet.toLocaleString('pl-PL')} PLN`;
+        }
+
+        // Kręcenie Kołem (Animacja i Rozliczenie)
+        function spin() {
+            if (isSpinning) return;
+            if (currentBets.length === 0) {
+                showToast("Postaw przynajmniej jeden zakład przed zakręceniem!");
+                return;
+            }
+
+            isSpinning = true;
+            const totalBet = getTotalBetAmount();
+            bankroll -= totalBet; // Pobranie stawki z bankrollu
+
+            // Rozliczenie rundy przez silnik
+            const result = gameEngine.playRound(currentBets);
+
+            // Obliczenie kąta docelowego dla animacji
+            const numSlices = gameEngine.WHEEL_SEQUENCE.length;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+            
+            // Indeks docelowy na kole
+            const targetIndex = result.winningIndex;
+            
+            // Pełne obroty (5-8 obrotów dla efektu) + przesunięcie do odpowiedniego wycinka
+            const extraRounds = 6 + Math.floor(Math.random() * 3);
+            const targetAngle = (2 * Math.PI * extraRounds) - (targetIndex * sliceAngle) - (sliceAngle / 2) - (Math.PI / 2);
+
+            const startTime = performance.now();
+            const spinDuration = 5000; // 5 sekund animacji
+            const startRotation = currentWheelRotation % (2 * Math.PI);
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / spinDuration, 1);
+                
+                // Easing (Slow down at the end)
+                const easeOut = 1 - Math.pow(1 - progress, 4);
+
+                currentWheelRotation = startRotation + (targetAngle - startRotation) * easeOut;
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Koniec animacji - Rozliczenie
+                    isSpinning = false;
+                    bankroll += result.totalPayout;
+                    
+                    addHistoryRecord(result.winningNumber, result.winningColor);
+                    showResultModal(result, totalBet);
+                    clearBets();
+                    updateUI();
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Dodanie wyniku do paska historii
+        function addHistoryRecord(number, color) {
+            const container = document.getElementById('history-container');
+            if (container.querySelector('span')) container.innerHTML = '';
+
+            const badge = document.createElement('div');
+            const bgColor = color === 'green' ? 'bg-emerald-600' : (color === 'red' ? 'bg-red-600' : 'bg-slate-800');
+            badge.className = `${bgColor} text-white font-bold text-xs px-2.5 py-1 rounded-md shadow flex-shrink-0 animate-bounce`;
+            badge.textContent = number;
+
+            container.prepend(badge);
+            if (container.children.length > 10) container.removeChild(container.lastChild);
+        }
+
+        // Modal Wyniku
+        function showResultModal(result, totalBet) {
+            const modal = document.getElementById('result-modal');
+            const content = document.getElementById('modal-content');
+            const numEl = document.getElementById('modal-number');
+            const payoutEl = document.getElementById('modal-payout');
+            const titleEl = document.getElementById('modal-title');
+            const iconEl = document.getElementById('modal-icon');
+
+            const colorHex = result.winningColor === 'green' ? '#10b981' : (result.winningColor === 'red' ? '#ef4444' : '#94a3b8');
+            
+            numEl.textContent = result.winningNumber;
+            numEl.style.color = colorHex;
+
+            const netProfit = result.totalPayout - totalBet;
+
+            if (result.totalPayout > 0) {
+                titleEl.textContent = "UPÓRNA WYGRANA!";
+                titleEl.className = "text-2xl font-bold creepster-font text-green-400 tracking-wider mb-1";
+                payoutEl.textContent = `Wypłata: +${result.totalPayout} PLN (Zysk: ${netProfit > 0 ? '+' : ''}${netProfit} PLN)`;
+                payoutEl.className = "text-lg font-bold mb-6 text-green-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-ghost text-green-400 animate-bounce"></i>';
+            } else {
+                titleEl.textContent = "POŻARTY PRZEZ DUCHY...";
+                titleEl.className = "text-2xl font-bold creepster-font text-orange-500 tracking-wider mb-1";
+                payoutEl.textContent = `Przegrana: -${totalBet} PLN`;
+                payoutEl.className = "text-lg font-bold mb-6 text-red-400";
+                iconEl.innerHTML = '<i class="fa-solid fa-skull-crossbones text-orange-500"></i>';
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('result-modal');
+            const content = document.getElementById('modal-content');
+
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Proste powiadomienie Toast
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-orange-600 text-white px-5 py-3 rounded-xl font-bold shadow-2xl z-50 animate-bounce flex items-center gap-2';
+            toast.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

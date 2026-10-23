@@ -1,0 +1,1051 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Charytatywny bankiet z okazji Halloween</title>
+<link rel="icon" type="image/png" href="dynia.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Pirata+One&display=swap">
+<style>
+  /* Layout: a haunted-house page. Bookmark-ribbon tabs hang from a sticky rail at the top,
+     a pumpkin charity band sits under them on every view, the banquet view is a moon hero,
+     a ticket and a night rail, the lists are tombstones, the shop is a card grid. */
+  :root {
+    --ink: #0f0716;
+    --ink-2: #190d25;
+    --ink-3: #251634;
+    --line: #3b2754;
+    --bone: #efe7d6;
+    --bone-dim: #b8adc9;
+    --pumpkin: #ff7a1a;
+    --pumpkin-ink: #1a0a00;
+    --slime: #9bd93c;
+    --blood: #ee5257;
+    --gold: #f2c14e;
+    --bat: #3a2455;
+    --font-display: 'Pirata One', Georgia, 'Times New Roman', serif;
+    --font-body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: radial-gradient(900px 420px at 85% 0%, rgba(122, 63, 176, 0.22), transparent 70%), var(--ink);
+    color: var(--bone);
+    font: 400 16px/1.55 var(--font-body);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    background: var(--ink);
+    z-index: 30;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1080px;
+    margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  h1, h2, h3, p, ol, ul, dl, dd, figure { margin: 0; padding: 0; }
+  ol, ul { list-style: none; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; }
+  a { color: inherit; }
+
+  .mono { font-family: var(--font-mono); }
+  .label {
+    font: 500 0.72rem/1.3 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+  }
+
+  :focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }
+
+  /* ---------- brand strip ---------- */
+  .brandrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding-block: 14px 10px;
+  }
+  .wordmark { font: 400 1.9rem/1 var(--font-display); color: var(--pumpkin); letter-spacing: 0.02em; }
+
+  /* ---------- bookmark ribbon tabs ---------- */
+  .nav {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 20;
+    background: var(--ink);
+    border-top: 3px solid var(--pumpkin);
+  }
+  .nav .wrap { display: flex; gap: 6px; }
+  .tab {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 170px;
+    padding: 12px 6px 26px;
+    text-align: center;
+    text-decoration: none;
+    background: var(--ink-3);
+    color: var(--bone);
+    font: 700 0.78rem/1.2 var(--font-body);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%);
+  }
+  .tab:hover { background: #33204a; }
+  .tab[aria-current="page"] { background: var(--pumpkin); color: var(--pumpkin-ink); }
+  .tab:focus-visible { outline: none; background: var(--bone); color: var(--ink); text-decoration: underline; }
+
+  /* ---------- charity band ---------- */
+  .charity { background: var(--pumpkin); color: var(--pumpkin-ink); }
+  .charity-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    padding-block: 12px;
+  }
+  .heart { width: 28px; height: 28px; flex: none; }
+  .charity-main { font: 400 clamp(1.5rem, 5vw, 2.2rem)/1.05 var(--font-display); letter-spacing: 0.01em; }
+  .charity-sub { font: 500 0.72rem/1.3 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    font: 700 0.9rem/1.2 var(--font-body);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn-primary { background: var(--pumpkin); color: var(--pumpkin-ink); }
+  .btn-primary:hover { background: #ff9143; }
+  .btn-ghost { background: transparent; color: var(--bone); border-color: var(--bone-dim); }
+  .btn-ghost:hover { border-color: var(--bone); }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; overflow: hidden; }
+  .sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .bat {
+    position: absolute;
+    left: 0;
+    top: var(--y);
+    width: var(--w);
+    color: var(--bat);
+    animation: drift var(--dur) linear var(--delay) infinite;
+  }
+  .bat svg { display: block; width: 100%; height: auto; transform-origin: 50% 60%; animation: flap 0.5s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translateX(-12vw); } to { transform: translateX(112vw); } }
+  @keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(0.65); } }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    padding-block: 36px 40px;
+  }
+  .hero-text { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; min-width: 0; }
+  .eyebrow { font: 500 0.78rem/1.3 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-dim); }
+  h1 { font-size: clamp(3.2rem, 12vw, 7rem); line-height: 0.92; letter-spacing: 0.01em; }
+  h1 .h-pump { display: block; color: var(--pumpkin); }
+  .lede { max-width: 34rem; font-size: 1.12rem; color: var(--bone); }
+
+  .count {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(25, 13, 37, 0.7);
+  }
+  .count-val { font: 500 1.45rem/1.25 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .moonwrap { display: flex; justify-content: center; }
+  .moon {
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 36%, rgba(120, 100, 70, 0.28) 0 7%, transparent 7.5%),
+      radial-gradient(circle at 62% 28%, rgba(120, 100, 70, 0.22) 0 5%, transparent 5.5%),
+      radial-gradient(circle at 58% 66%, rgba(120, 100, 70, 0.26) 0 10%, transparent 10.5%),
+      radial-gradient(circle at 34% 72%, rgba(120, 100, 70, 0.2) 0 4%, transparent 4.5%),
+      radial-gradient(circle at 36% 32%, #fff4d8, #eadcb9 58%, #bfae88);
+    box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.2), 0 0 90px 10px rgba(255, 170, 80, 0.22);
+  }
+
+  /* ---------- generic blocks ---------- */
+  .block { padding-block: 28px; }
+  .block h2, .page-h { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.05; }
+  .block h2 { margin-bottom: 16px; }
+  .note { max-width: 40rem; margin-top: 14px; color: var(--bone-dim); }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  /* ---------- ticket ---------- */
+  .ticket {
+    --stub: 124px;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--stub);
+    background: var(--ink-3);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .ticket::before, .ticket::after {
+    content: "";
+    position: absolute;
+    left: calc(100% - var(--stub) - 13px);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .ticket::before { top: -14px; clip-path: inset(50% 0 0 0); }
+  .ticket::after { bottom: -14px; clip-path: inset(0 0 50% 0); }
+  .ticket-main { padding: 24px 20px 24px 22px; min-width: 0; }
+  .ticket dl { display: grid; gap: 16px; }
+  .ticket dt { margin-bottom: 2px; }
+  .ticket dd { font-size: 1.1rem; font-weight: 600; overflow-wrap: anywhere; }
+  .ticket dd a { color: var(--pumpkin); text-underline-offset: 3px; }
+  .stub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 16px 8px;
+    border-left: 2px dashed var(--line);
+    text-align: center;
+  }
+  .stub-day { font: 400 3rem/0.95 var(--font-display); color: var(--pumpkin); }
+
+  /* ---------- night rail ---------- */
+  .rail { position: relative; padding: 30px 0 64px; margin-inline: 4px; }
+  .rail-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--pumpkin), #8a3fb8 55%, #2c1d6b); }
+  .rail-ticks { position: absolute; left: 0; right: 0; top: 24px; height: 20px; }
+  .rail-ticks span { position: absolute; top: 0; width: 2px; height: 20px; margin-left: -1px; background: var(--bone-dim); opacity: 0.55; }
+  .rail-labels { position: absolute; left: 0; right: 0; top: 52px; }
+  .rail-labels span { position: absolute; transform: translateX(-50%); text-align: center; white-space: nowrap; font: 500 0.82rem/1.3 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .rail-labels span:first-child { transform: none; text-align: left; }
+  .rail-labels span:last-child { transform: translateX(-100%); text-align: right; }
+  .rail-labels small { display: block; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bone-dim); }
+
+  /* ---------- editions ---------- */
+  .editions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .ed { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 4px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--ink-2); text-align: center; }
+  .pk { width: 56px; height: 49px; color: #4a3466; }
+  .ed-n { font: 500 0.7rem/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--bone-dim); }
+  .ed-t { font: 400 1.3rem/1.1 var(--font-display); color: var(--bone-dim); }
+  .ed-now { border-color: var(--pumpkin); background: var(--ink-3); }
+  .ed-now .pk { color: var(--pumpkin); filter: drop-shadow(0 0 12px rgba(255, 122, 26, 0.55)); }
+  .ed-now .ed-n { color: var(--bone); }
+  .ed-now .ed-t { color: var(--pumpkin); }
+
+  /* ---------- page headings for lists and shop ---------- */
+  .view .wrap { padding-block: 36px 48px; }
+  .page-sub { max-width: 40rem; margin: 10px 0 28px; color: var(--bone-dim); font-size: 1.05rem; }
+
+  /* ---------- tombstones ---------- */
+  .stones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+  .stone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 64px 22px 40px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--ink-3), var(--ink-2));
+    border: 2px solid var(--line);
+    border-radius: 150px 150px 10px 10px;
+  }
+  .stone::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px solid var(--c);
+    border-radius: 140px 140px 4px 4px;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .stone-good { --c: var(--slime); }
+  .stone-black { --c: var(--blood); }
+  .stone-vip {
+    --c: var(--gold);
+    border-color: var(--gold);
+    background: radial-gradient(120% 70% at 50% 0%, rgba(242, 193, 78, 0.18), transparent 60%), linear-gradient(180deg, var(--ink-3), var(--ink-2));
+    box-shadow: 0 0 0 1px rgba(242, 193, 78, 0.25), 0 10px 40px rgba(242, 193, 78, 0.12);
+  }
+  .stone-vip::before { opacity: 0.8; border-style: double; border-width: 3px; }
+  .stone-vip h3 { letter-spacing: 0.03em; }
+  .crest { position: absolute; top: 22px; left: 50%; width: 52px; height: auto; transform: translateX(-50%); color: var(--gold); }
+  .stone h3 { font-size: 2.3rem; line-height: 1; color: var(--c); }
+  .stone-label { margin-top: 10px; }
+  .stone-price { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 2px 10px; font: 400 4.6rem/1 var(--font-display); color: var(--bone); }
+  .stone-price small { font: 500 0.95rem/1 var(--font-mono); letter-spacing: 0.1em; color: var(--bone-dim); }
+  .stone-price.is-range { font-size: 3.2rem; }
+  .stone-text { max-width: 17rem; margin-top: 8px; color: var(--bone-dim); }
+  .stones-note { margin-top: 26px; padding: 14px 18px; border: 1px dashed var(--pumpkin); border-radius: 8px; max-width: 40rem; }
+
+  /* ---------- evening schedule ---------- */
+  .sched { --gold-soft: #c7a45a; --time-w: 9rem; position: relative; isolation: isolate; padding-block: 40px; }
+  .sched::before {
+    content: "";
+    position: absolute;
+    inset: -20px 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 34% at 18% 8%, rgba(255, 122, 24, 0.09), transparent 70%),
+      radial-gradient(50% 30% at 92% 55%, rgba(122, 63, 176, 0.12), transparent 70%);
+  }
+  .web { position: absolute; top: 0; right: max(16px, env(safe-area-inset-right, 0px)); width: 150px; height: 150px; transform: scaleX(-1); fill: none; stroke: var(--bone-dim); stroke-width: 1; opacity: 0.35; pointer-events: none; }
+  .sched-eyebrow { color: var(--gold-soft); }
+  .sched h2 { margin: 6px 0 10px; }
+  .sched-quote { font: italic 600 1.15rem/1.4 var(--font-body); color: var(--pumpkin); }
+  .sched-intro { max-width: 40rem; margin-top: 14px; color: var(--bone-dim); }
+  .sched-sub { display: flex; align-items: center; gap: 14px; margin: 36px 0 22px; font-size: 1.7rem; line-height: 1; color: var(--gold-soft); }
+  .sched-sub::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold-soft), transparent); opacity: 0.5; }
+
+  .timeline { display: grid; gap: 0; }
+  .ev {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--time-w) 20px minmax(0, 1fr);
+    column-gap: 14px;
+    padding-bottom: 22px;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .ev:last-child { padding-bottom: 0; }
+  .ev::before { content: ""; position: absolute; top: 20px; bottom: -20px; left: calc(var(--time-w) + 23px); width: 2px; background: linear-gradient(180deg, rgba(255, 122, 24, 0.7), rgba(255, 122, 24, 0.18)); }
+  .ev:last-child::before { display: none; }
+  .ev.pending { opacity: 0.35; transform: translateY(14px); }
+  .ev.pending.in { opacity: 1; transform: none; }
+  .ev-time { padding-top: 10px; text-align: right; font: 500 1.05rem/1.3 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--pumpkin); }
+  .ev-node { z-index: 1; align-self: start; justify-self: center; width: 14px; height: 14px; margin-top: 13px; border-radius: 50%; background: var(--ink); border: 2px solid var(--pumpkin); box-shadow: 0 0 12px rgba(255, 122, 24, 0.5); }
+  .ev-card {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 4px 16px;
+    min-width: 0;
+    padding: 18px 20px;
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .ev-card:hover { border-color: var(--pumpkin); box-shadow: 0 0 28px rgba(255, 122, 24, 0.2); transform: translateY(-2px); }
+  .ev-ico { grid-row: 1 / span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(199, 164, 90, 0.5); background: rgba(199, 164, 90, 0.08); color: var(--gold-soft); }
+  .ev-ico svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .ev-ico svg.solid { width: 28px; height: auto; fill: currentColor; stroke: none; }
+  .ev-card h3 { align-self: center; font-size: 1.55rem; line-height: 1.1; color: var(--bone); }
+  .ev-card p { grid-column: 2; color: var(--bone-dim); }
+  .ev-key .ev-card { border-color: var(--gold-soft); background: radial-gradient(90% 120% at 50% 0%, rgba(199, 164, 90, 0.16), transparent 70%), var(--ink-3); box-shadow: 0 0 0 1px rgba(199, 164, 90, 0.3), 0 0 38px rgba(199, 164, 90, 0.2); }
+  .ev-key .ev-card:hover { box-shadow: 0 0 0 1px rgba(199, 164, 90, 0.5), 0 0 52px rgba(199, 164, 90, 0.32); }
+  .ev-key .ev-card h3 { color: var(--gold-soft); }
+  .ev-key .ev-time { color: var(--gold-soft); }
+  .ev-key .ev-node { border-color: var(--gold-soft); box-shadow: 0 0 18px rgba(199, 164, 90, 0.7); }
+  .ev-key .ev-ico { border-color: var(--gold-soft); background: rgba(199, 164, 90, 0.16); }
+  @media (max-width: 700px) {
+    .web { width: 110px; height: 110px; }
+    .ev { grid-template-columns: minmax(0, 1fr); row-gap: 8px; }
+    .ev::before, .ev-node { display: none; }
+    .ev-time { padding-top: 0; text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ev, .ev-card { transition: none; }
+    .ev-card:hover { transform: none; }
+  }
+
+  /* ---------- who is on which list ---------- */
+  .rosters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 32px; }
+  .roster { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--ink-2); }
+  .roster h3 { margin-bottom: 14px; font-size: 1.8rem; line-height: 1; color: var(--c); }
+  .roster-good { --c: var(--slime); }
+  .roster-grave { --c: var(--blood); }
+  .roster-vip { --c: var(--gold); border-color: rgba(242, 193, 78, 0.5); }
+  .roster-good { grid-column: 1 / -1; }
+  .names { display: flex; flex-wrap: wrap; gap: 8px; }
+  .names li { padding: 6px 12px; border: 1px solid var(--line); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); border-radius: 18px; font-weight: 600; font-size: 0.95rem; overflow-wrap: anywhere; }
+  .roster-empty { color: var(--bone-dim); }
+  @media (max-width: 820px) { .rosters { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- shop ---------- */
+  .shop-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+  .cartpill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--ink-2); font: 500 0.9rem/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+  .product { display: flex; flex-direction: column; background: var(--ink-2); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .stage { padding: 20px 20px 8px; background: radial-gradient(circle at 50% 42%, rgba(239, 231, 214, 0.13), transparent 62%), var(--ink-3); }
+  .hoodie { display: block; width: 100%; max-width: 250px; height: auto; margin-inline: auto; }
+  .product-body { display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 20px; flex: 1; }
+  .product-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .product h3 { font-size: 2rem; line-height: 1; }
+  .price { font: 500 1rem/1 var(--font-mono); color: var(--pumpkin); white-space: nowrap; }
+  .product-desc { color: var(--bone-dim); }
+  .sizes { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .sizes legend { padding: 0; margin-bottom: 8px; }
+  .size { position: relative; }
+  .size input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .size span { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font: 600 0.9rem/1 var(--font-body); color: var(--bone); }
+  .size input:checked + span { background: var(--bone); color: var(--ink); border-color: var(--bone); }
+  .size input:focus-visible + span { outline: 2px solid var(--pumpkin); outline-offset: 2px; }
+  .add { margin-top: auto; }
+
+  .order { margin-top: 32px; padding: 22px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--ink-2); }
+  .order h3 { font-size: 2rem; line-height: 1; margin-bottom: 14px; }
+  .lines { display: grid; gap: 10px; }
+  .line { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .line-name { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+  .line-name span { margin-left: 8px; color: var(--bone-dim); font-weight: 400; }
+  .qty { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .qty button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--ink-3); color: var(--bone); font: 700 1.1rem/1 var(--font-body); cursor: pointer; }
+  .qty button:hover { border-color: var(--bone); }
+  .line-sum { min-width: 5.5rem; text-align: right; font: 500 0.95rem/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+  .empty { color: var(--bone-dim); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; font: 400 1.9rem/1 var(--font-display); }
+  .total .mono { color: var(--pumpkin); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .order-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .order-text { width: 100%; min-height: 8rem; margin-top: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--ink); color: var(--bone); font: 400 0.85rem/1.5 var(--font-mono); }
+  .status { min-height: 1.4em; margin-top: 10px; color: var(--slime); font: 500 0.85rem/1.4 var(--font-mono); }
+
+  /* ---------- footer ---------- */
+  .foot { border-top: 1px solid var(--line); }
+  .foot .wrap { padding-block: 22px 40px; }
+  .foot p { color: var(--bone-dim); font: 400 0.8rem/1.6 var(--font-mono); }
+
+  /* ---------- narrow screens ---------- */
+  @media (max-width: 820px) {
+    .stones, .products { grid-template-columns: minmax(0, 1fr); }
+    .stone { max-width: 400px; width: 100%; margin-inline: auto; }
+    .product { max-width: 440px; width: 100%; margin-inline: auto; }
+  }
+  @media (max-width: 760px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-block: 24px 32px; }
+    .moonwrap { order: -1; justify-content: flex-start; }
+    .moon { width: 116px; }
+    .ticket { --stub: 100px; }
+    .stub-day { font-size: 2.4rem; }
+  }
+  @media (max-width: 420px) {
+    .ed-t { font-size: 1.1rem; }
+    .pk { width: 44px; height: 38px; }
+    .line { grid-template-columns: minmax(0, 1fr) auto; }
+    .line-sum { grid-column: 2; grid-row: 1; }
+    .qty { grid-column: 1 / -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bat, .bat svg { animation: none; }
+    .bat { transform: translateX(var(--x)); }
+  }
+
+  /* ---------- hoodie art ---------- */
+  .hoodie.jack { --hd: #ee6a12; --hd-shade: #c24f08; --hd-edge: #ff9a4d; --hd-inside: #2a1208; --hd-cord: #f6e7cf; --print: #1b0e08; }
+  .hoodie.ghost { --hd: #e8e0cd; --hd-shade: #c9bfa6; --hd-edge: #bdb398; --hd-inside: #2a2230; --hd-cord: #7a6f8c; --print: #1b1024; }
+  .hoodie.bat { --hd: #241633; --hd-shade: #150c20; --hd-edge: #7a58a3; --hd-inside: #0a0510; --hd-cord: #d9cde8; --print: #ff7a1a; }
+  .hd-hood { fill: var(--hd); stroke: var(--hd-edge); stroke-width: 2; }
+  .hd-body { fill: var(--hd); stroke: var(--hd-edge); stroke-width: 2; stroke-linejoin: round; }
+  .hd-shade { fill: var(--hd-shade); }
+  .hd-pocket { fill: rgba(0, 0, 0, 0.12); stroke: var(--hd-shade); stroke-width: 2.5; stroke-linejoin: round; }
+  .hd-open { fill: var(--hd-inside); }
+  .hd-rim { fill: none; stroke: var(--hd-shade); stroke-width: 4; stroke-linecap: round; }
+  .hd-cord { fill: none; stroke: var(--hd-cord); stroke-width: 2.5; stroke-linecap: round; }
+  .hd-bead { fill: var(--hd-cord); }
+  .pr { fill: var(--print); }
+  .pr-cut { fill: var(--hd); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="hdclip"><path d="M66 62 L14 200 Q12 206 18 209 L42 218 Q48 220 50 214 L62 150 L58 232 Q58 238 64 238 L176 238 Q182 238 182 232 L178 150 L190 214 Q192 220 198 218 L222 209 Q228 206 226 200 L174 62 Q150 50 120 50 Q90 50 66 62 Z"/></clipPath>
+  </defs>
+  <symbol id="hoodie" viewBox="0 0 240 250">
+    <path class="hd-hood" d="M80 62 Q70 14 120 10 Q170 14 160 62 Q120 78 80 62 Z"/>
+    <path class="hd-body" d="M66 62 L14 200 Q12 206 18 209 L42 218 Q48 220 50 214 L62 150 L58 232 Q58 238 64 238 L176 238 Q182 238 182 232 L178 150 L190 214 Q192 220 198 218 L222 209 Q228 206 226 200 L174 62 Q150 50 120 50 Q90 50 66 62 Z"/>
+    <g clip-path="url(#hdclip)">
+      <path class="hd-shade" d="M10 202 L52 218 L56 200 L18 184 Z"/>
+      <path class="hd-shade" d="M230 202 L188 218 L184 200 L222 184 Z"/>
+      <rect class="hd-shade" x="40" y="226" width="160" height="16"/>
+      <path class="hd-pocket" d="M80 170 L160 170 L172 212 L68 212 Z"/>
+    </g>
+    <path class="hd-open" d="M92 58 Q94 30 120 30 Q146 30 148 58 Q120 76 92 58 Z"/>
+    <path class="hd-rim" d="M88 60 Q90 24 120 24 Q150 24 152 60"/>
+    <path class="hd-cord" d="M106 72 L104 110"/>
+    <path class="hd-cord" d="M134 72 L136 110"/>
+    <circle class="hd-bead" cx="104" cy="113" r="3.2"/>
+    <circle class="hd-bead" cx="136" cy="113" r="3.2"/>
+  </symbol>
+  <symbol id="pumpkin" viewBox="0 0 64 56">
+    <path d="M32 12 C14 6 2 18 2 32 C2 46 14 54 32 54 C50 54 62 46 62 32 C62 18 50 6 32 12 Z" fill="currentColor"/>
+    <path d="M32 12 C22 20 20 44 32 54 M32 12 C42 20 44 44 32 54" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="2"/>
+    <path d="M30 13 C30 6 34 2 40 1 C38 6 38 10 36 14 Z" style="fill:#5a9a30"/>
+    <path d="M16 28 L24 28 L20 21 Z M40 28 L48 28 L44 21 Z" style="fill:#0f0716"/>
+    <path d="M18 38 L25 41 L29 37 L32 42 L35 37 L39 41 L46 38 Q43 48 32 48 Q21 48 18 38 Z" style="fill:#0f0716"/>
+  </symbol>
+  <symbol id="bat" viewBox="0 0 60 28">
+    <path d="M30 10 Q20 0 2 4 Q8 10 6 18 Q14 14 18 22 Q24 14 30 20 Q36 14 42 22 Q46 14 54 18 Q52 10 58 4 Q40 0 30 10 Z" fill="currentColor"/>
+    <path d="M26 9 L27 2 L30 7 L33 2 L34 9 Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<header>
+  <div class="wrap brandrow">
+    <span class="wordmark">GOUBi</span>
+    <span class="label">Ground Zero &middot; 30.10.2026</span>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <div class="wrap">
+    <a class="tab" href="#banquet" data-go="banquet">Bankiet</a>
+    <a class="tab" href="#lists" data-go="lists">Lista</a>
+    <a class="tab" href="#shop" data-go="shop">🔥Piekielny Sklep🔥</a>
+    <!-- Przycisk przenoszący do podstrony z ruletką -->
+    <a class="tab" href="ruletka.html" class="halloween-btn">🎃 Zagraj w Upiorną Ruletkę! 👻</a>
+  </div>
+</nav>
+
+<div class="charity" role="note">
+  <div class="wrap charity-in">
+    <svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-9.5-9C.6 8.6 2.4 4.5 6.3 4.5c2.2 0 3.8 1.2 5.7 3.3 1.9-2.1 3.5-3.3 5.7-3.3 3.9 0 5.7 4.1 3.8 7.5C19 16.4 12 21 12 21z"/></svg>
+    <p class="charity-main">Wszystkie wpłaty zostaną przekazane na cele charytatywne.</p>
+    <p class="charity-sub">Opłaty wpisowe, Bluzy z Kapturem, Wszystko</p>
+  </div>
+</div>
+
+<main>
+  <!-- ======================= THE BANQUET ======================= -->
+  <section class="view" id="view-banquet">
+    <div class="hero">
+      <div class="sky" aria-hidden="true">
+        <div class="bat" style="--y:12%;--w:54px;--dur:26s;--delay:-9s;--x:62vw"><svg viewBox="0 0 60 28"><use href="#bat"/></svg></div>
+        <div class="bat" style="--y:40%;--w:38px;--dur:34s;--delay:-21s;--x:30vw"><svg viewBox="0 0 60 28"><use href="#bat"/></svg></div>
+        <div class="bat" style="--y:70%;--w:46px;--dur:30s;--delay:-3s;--x:84vw"><svg viewBox="0 0 60 28"><use href="#bat"/></svg></div>
+      </div>
+      <div class="wrap hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow">GOUBi &middot; GULtv &middot; 4 edycja z rzędu</p>
+          <h1><span class="h-pump">Charytatywny</span> Bankiet Halloween</h1>
+          <p class="lede">Czwarta z rzędu impreza z okazji Halloween w domu GOUBi'ego – a zarazem pierwsza, której przyświeca szczytny cel.</p>
+          <div class="count">
+            <span class="label" id="count-label">Start</span>
+            <span class="count-val" id="count-val">Piątek 30.10.2026, 18:00</span>
+          </div>
+          <div class="cta">
+            <a class="btn btn-primary" href="#lists" data-go="lists">Zobacz Liste Gości</a>
+            <a class="btn btn-ghost" href="#shop" data-go="shop">🔥Piekielny Sklep🔥</a>
+          </div>
+        </div>
+        <div class="moonwrap" aria-hidden="true"><div class="moon"></div></div>
+      </div>
+    </div>
+
+    <div class="wrap block">
+      <h2 class="vh">Szczegóły Wydarzenia</h2>
+      <div class="ticket">
+        <div class="ticket-main">
+          <dl>
+            <div><dt class="label">Kiedy</dt><dd>Piątek 30.10.2026, od godz. 18:00</dd></div>
+            <div><dt class="label">Do</dt><dd>02:00, noc z 30 na 31 października</dd></div>
+            <div><dt class="label">Gdzie</dt><dd>Rozkochów GOUBi house, Ground Zero</dd></div>
+            <div><dt class="label">Cena Wejścia</dt><dd>Od 10 PLN, <a href="#lists" data-go="lists">Zobacz Listę</a></dd></div>
+          </dl>
+        </div>
+        <div class="stub" aria-hidden="true">
+          <span class="label">Piątek</span>
+          <span class="stub-day">30.10</span>
+          <span class="label">2026</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap block">
+      <h2>Osiem Godzin Nocy</h2>
+      <div class="rail" role="img" aria-label="Timeline from 18:00 on 30 October to 02:00 on 31 October">
+        <div class="rail-track"></div>
+        <div class="rail-ticks">
+          <span style="left:0%"></span><span style="left:12.5%"></span><span style="left:25%"></span><span style="left:37.5%"></span><span style="left:50%"></span><span style="left:62.5%"></span><span style="left:75%"></span><span style="left:87.5%"></span><span style="left:100%"></span>
+        </div>
+        <div class="rail-labels">
+          <span style="left:0%">18:00<small>Start</small></span>
+          <span style="left:25%">19:00<small>QUIZ</small></span>
+          <span style="left:50%">20:00<small>Imprezka Pełną Parą</small></span>
+          <span style="left:75%">00:00<small>ogłoszenie zebranej kwoty</small></span>
+          <span style="left:100%">02:00<small>Koniec</small></span>
+        </div>
+      </div>
+      <p class="note">Impreza rozpoczyna się w piątek 30 października o godzinie 18:00, a kończy o 2:00 nad ranem 31 października – czyli w samo Halloween.</p>
+    </div>
+
+    <div class="wrap block sched" id="schedule">
+      <svg class="web" viewBox="0 0 150 150" aria-hidden="true">
+        <path d="M0 0 L150 0 M0 0 L140 51 M0 0 L112 98 M0 0 L70 131 M0 0 L0 150"/>
+        <path d="M45 0 Q40 10 42 15 Q38 22 32 32 Q22 38 15 42 Q10 40 0 45"/>
+        <path d="M90 0 Q82 22 85 31 Q76 44 64 64 Q44 76 31 85 Q22 82 0 90"/>
+        <path d="M135 0 Q122 34 127 46 Q112 64 95 95 Q64 112 46 127 Q34 122 0 135"/>
+      </svg>
+      <p class="label sched-eyebrow" lang="en">Noc Walki z Upiorami i Koszmarami Potrzebujących</p>
+      <h2 lang="en">Charytatywny bankiet z okazji Halloween</h2>
+      <p class="sched-quote" lang="pl">„Jedna noc. Wspólny cel. Magia pomagania.”</p>
+      <p class="sched-intro" lang="pl">Zapraszamy na wyjątkowy wieczór pełen integracji, dobrej zabawy i wspólnego pomagania. Sprawdź harmonogram i przygotuj się na noc, która ma znaczenie.</p>
+      <h3 class="sched-sub" lang="pl">Harmonogram wieczoru</h3>
+      <ol class="timeline" lang="pl">
+        <li class="ev">
+          <p class="ev-time">18:00–19:00</p>
+          <span class="ev-node" aria-hidden="true"></span>
+          <article class="ev-card">
+            <span class="ev-ico" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="12" y="14" width="8" height="14" rx="1.5"/><path d="M16 14v-2"/><path d="M16 4c3 3 4 5 4 7a4 4 0 0 1-8 0c0-2 1-4 4-7z"/><path d="M9 28h14"/></svg></span>
+            <h3>Przybycie do nawiedzonej rezydencji</h3>
+            <p>Powitanie gości, czas na zajęcie miejsc, pierwsze rozmowy i oficjalne otwarcie bankietu charytatywnego.</p>
+          </article>
+        </li>
+        <li class="ev">
+          <p class="ev-time">19:00–19:40</p>
+          <span class="ev-node" aria-hidden="true"></span>
+          <article class="ev-card">
+            <span class="ev-ico" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12"/><path d="M12.5 12.5a3.5 3.5 0 1 1 5.2 3c-1.2.8-1.7 1.4-1.7 2.8"/><circle cx="16" cy="22.5" r="0.9" fill="currentColor"/></svg></span>
+            <h3 lang="en">Halloween Challenge</h3>
+            <p>40-minutowa gra quizowo-zadaniowo-integracyjna. Zbierz drużynę, zmierz się z zagadkami i podejmij halloweenowe wyzwania!</p>
+          </article>
+        </li>
+        <li class="ev">
+          <p class="ev-time">20:00–21:00</p>
+          <span class="ev-node" aria-hidden="true"></span>
+          <article class="ev-card">
+            <span class="ev-ico" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 19a5 5 0 0 1 .8-9.9A7 7 0 0 1 23 10a4.5 4.5 0 0 1 0 9z"/><path d="M17 19l-3 5h4l-2 5"/></svg></span>
+            <h3>Cisza przed burzą</h3>
+            <p>Ostatnie chwile przygotowań, spotkania ze znajomymi i stopniowe budowanie atmosfery przed rozpoczęciem imprezy.</p>
+          </article>
+        </li>
+        <li class="ev ev-key">
+          <p class="ev-time">00:00–00:10</p>
+          <span class="ev-node" aria-hidden="true"></span>
+          <article class="ev-card">
+            <span class="ev-ico" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 27s-9.5-6-12.5-12C1.2 10.5 4 6 8.5 6c2.8 0 5 1.6 7.5 4.5C18.600 7.600 20.700 6 23.500 6 28 6 30.800 10.500 28.500 15 25.500 21 16 27 16 27z"/></svg></span>
+            <h3>Magia pomagania</h3>
+            <p>Kulminacyjny moment wieczoru: podsumowanie zbiórki charytatywnej, ogłoszenie zebranej kwoty oraz podziękowania dla wszystkich darczyńców i uczestników.</p>
+          </article>
+        </li>
+        <li class="ev">
+          <p class="ev-time">00:10–02:00</p>
+          <span class="ev-node" aria-hidden="true"></span>
+          <article class="ev-card">
+            <span class="ev-ico" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M24 20a10 10 0 1 1-12-14 8 8 0 0 0 12 14z"/></svg></span>
+            <h3>Ostatni akt nocy</h3>
+            <p>Stopniowe wyciszanie muzyki, ostatnie rozmowy, pożegnania i spokojne zakończenie bankietu.</p>
+          </article>
+        </li>
+      </ol>
+      <script>
+      (function () {
+        var items = document.querySelectorAll('.timeline .ev');
+        if (!('IntersectionObserver' in window)) { return; }
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+          });
+        }, { threshold: 0.15 });
+        Array.prototype.forEach.call(items, function (el) { el.classList.add('pending'); io.observe(el); });
+      })();
+      </script>
+    </div>
+
+    <div class="wrap block">
+      <h2>Czwarte Halloween w domu GOUBi'ego</h2>
+      <ol class="editions">
+        <li class="ed"><svg class="pk" viewBox="0 0 64 56" aria-hidden="true"><use href="#pumpkin"/></svg><span class="ed-n">Edition 1</span><span class="ed-t">Party</span></li>
+        <li class="ed"><svg class="pk" viewBox="0 0 64 56" aria-hidden="true"><use href="#pumpkin"/></svg><span class="ed-n">Edition 2</span><span class="ed-t">Party</span></li>
+        <li class="ed"><svg class="pk" viewBox="0 0 64 56" aria-hidden="true"><use href="#pumpkin"/></svg><span class="ed-n">Edition 3</span><span class="ed-t">Party</span></li>
+        <li class="ed ed-now"><svg class="pk" viewBox="0 0 64 56" aria-hidden="true"><use href="#pumpkin"/></svg><span class="ed-n">Edition 4</span><span class="ed-t">Charity</span></li>
+      </ol>
+      <p class="note">Edycje od pierwszej do trzeciej miały charakter imprezowy. Czwarta edycja jest pierwszą, która ma cel charytatywny.</p>
+    </div>
+  </section>
+
+  <!-- ======================= THE LISTS ======================= -->
+  <section class="view" id="view-lists" hidden>
+    <div class="wrap">
+      <h2 class="page-h">Zabójcza Lista</h2>
+      <p class="page-sub">Trzy sposoby wejścia. To, na której liście się znajdujesz, decyduje o kosztach wieczoru.</p>
+      <div class="stones">
+        <article class="stone stone-good">
+          <h3>Good List</h3>
+          <p class="label stone-label">Opłata za wstęp</p>
+          <p class="stone-price"><span>10</span><small>PLN</small></p>
+          <p class="stone-text">Jesteś na liście, więc za wstęp płacisz tylko 10 PLN.</p>
+        </article>
+        <article class="stone stone-black">
+          <h3>Grave List</h3>
+          <p class="label stone-label">Opłata za wstęp</p>
+          <p class="stone-price"><span>100</span><small>PLN</small></p>
+          <p class="stone-text">Chcesz wejść na imprezę? Płacisz 100 PLN za wstęp.</p>
+        </article>
+        <article class="stone stone-vip">
+          <svg class="crest" viewBox="0 0 60 28" aria-hidden="true"><use href="#bat"/></svg>
+          <h3>Vampire Court</h3>
+          <p class="label stone-label">Płaci GOUBi</p>
+          <p class="stone-price is-range"><span>500</span><small>or</small><span>1000</span><small>PLN</small></p>
+          <p class="stone-text">Jeśli na przyjęciu pojawi się osoba o statusie Vampire Court, gospodarz płaci 500 PLN lub 1000 PLN.</p>
+        </article>
+      </div>
+      <div class="rosters">
+        <section class="roster roster-good" aria-labelledby="roster-good-h">
+          <h3 id="roster-good-h">On the Good List</h3>
+          <ul class="names">
+            <li>Brzoza</li>
+            <li>Ania</li>
+            <li>Kubson</li>
+            <li>Alicja</li>
+            <li>Baster</li>
+            <li>dupka Bastera</li>
+            <li>GUCH</li>
+            <li>Oliwia ta której boi sie sam Senior GUCH</li>
+            <li>Kacpi</li>
+            <li>Kraczor</li>
+            <li>Dupka Kraczora</li>
+            <li>Szymut</li>
+            <li>PW</li>
+            <li>Felo</li>
+            <li>Niko</li>
+            <li>Werka (dziewczyna nikochana)</li>
+            <li>Bruno</li>
+            <li>Żelek</li>
+            <li>Fido z dziewczyną</li>
+            <li>Korpi</li>
+            <li>Myszki Korpiego</li>
+          </ul>
+        </section>
+        <section class="roster roster-grave" aria-labelledby="roster-grave-h">
+          <h3 id="roster-grave-h">On the Grave List</h3>
+          <ul class="names">
+            <li>Patrycja Brożek znana jako Bożek</li>
+            <li>Emilka Kiełbasińska znana jako kobieta która wyrwała feliksiaka z moich ramion</li>
+          </ul>
+        </section>
+        <section class="roster roster-vip" aria-labelledby="roster-vip-h">
+          <h3 id="roster-vip-h">In the Vampire Court</h3>
+          <ul class="names">
+            <li>Paulina Szarek</li>
+            <li>Maja</li>
+          </ul>
+        </section>
+      </div>
+      <p class="stones-note">Jeśli nie ma cie na żadnej liście napisz na instagramie @wodny_goubi, OPŁATA 50 PLN</p>
+      <p class="stones-note">Wszystkie wpłaty trafiają na cele charytatywne, niezależnie od tego, na której liście się znajdujesz.</p>
+    </div>
+  </section>
+
+  <!-- ======================= THE SHOP ======================= -->
+  <section class="view" id="view-shop" hidden>
+    <div class="wrap">
+      <div class="shop-top">
+        <div>
+          <h2 class="page-h">🔥Piekielny Sklep🔥</h2>
+          <p class="page-sub" style="margin-bottom:0">Trzy wzory, 150 PLN za każdy. Cały dochód zostanie przekazany na cele charytatywne.</p>
+        </div>
+        <span class="cartpill" id="cartpill">Order: 0 items &middot; 0 PLN</span>
+      </div>
+
+      <div class="products" style="margin-top:28px">
+        <article class="product">
+          <div class="stage">
+            <img src="Batman.png" alt="Jasna Bluza typu Hoodie z naklejoną figurką lego na klacie">
+          </div>
+          <div class="product-body">
+            <div class="product-head"><h3>Batman</h3><p class="price">180 PLN</p></div>
+            <p class="product-desc">Jasna Bluza typu Hoodie z naklejoną figurką lego na klacie</p>
+            <fieldset class="sizes">
+              <legend class="label">Size</legend>
+              <label class="size"><input type="radio" name="size-jack" id="jack-S" value="S"><span>S</span></label>
+              <label class="size"><input type="radio" name="size-jack" id="jack-M" value="M" checked><span>M</span></label>
+              <label class="size"><input type="radio" name="size-jack" id="jack-L" value="L"><span>L</span></label>
+              <label class="size"><input type="radio" name="size-jack" id="jack-XL" value="XL"><span>XL</span></label>
+            </fieldset>
+            <button class="btn btn-primary add" type="button" id="add-jack" data-add="jack">Add to order</button>
+          </div>
+        </article>
+
+        <article class="product">
+          <div class="stage">
+             <img src="Piwo.png", alt="Ciemna Bluza z napisem PIWO MOJE PALIWO">
+          </div>
+          <div class="product-body">
+            <div class="product-head"><h3>Lech</h3><p class="price">150 PLN</p></div>
+            <p class="product-desc">Ciemna Bluza z napisem PIWO MOJE PALIWO</p>
+            <fieldset class="sizes">
+              <legend class="label">Size</legend>
+              <label class="size"><input type="radio" name="size-ghost" id="ghost-S" value="S"><span>S</span></label>
+              <label class="size"><input type="radio" name="size-ghost" id="ghost-M" value="M" checked><span>M</span></label>
+              <label class="size"><input type="radio" name="size-ghost" id="ghost-L" value="L"><span>L</span></label>
+              <label class="size"><input type="radio" name="size-ghost" id="ghost-XL" value="XL"><span>XL</span></label>
+            </fieldset>
+            <button class="btn btn-primary add" type="button" id="add-ghost" data-add="ghost">Add to order</button>
+          </div>
+        </article>
+
+        <article class="product">
+          <div class="stage">
+          </div>
+          <div class="product-body">
+            <div class="product-head"><h3>Torebka</h3><p class="price">100 PLN</p></div>
+            <p class="product-desc">Torebka jest na etapie projektowym</p>
+            <fieldset class="sizes">
+              <legend class="label">Size</legend>
+              <label class="size"><input type="radio" name="size-bat" id="bat-S" value="S"><span>Fajna zgrabna</span></label>
+            </fieldset>
+            <button class="btn btn-primary add" type="button" id="add-bat" data-add="bat">Dodaj do zamówienia</button>
+          </div>
+        </article>
+      </div>
+
+      <section class="order" id="order" aria-labelledby="order-h">
+        <h3 id="order-h">Twoje Zamówienie</h3>
+        <ul class="lines" id="order-list"></ul>
+        <div class="total"><span>Koszt Zamówienia</span><span class="mono" id="order-total">0 PLN</span></div>
+        <div class="order-actions">
+          <a class="btn btn-primary" id="order-ig" href="https://www.instagram.com/wodny_goubi/" target="_blank" rel="noopener noreferrer">Zamów przez Instagram'a</a>
+          <button class="btn btn-ghost" type="button" id="copy-order">Skopiuj Treść Zamówienia</button>
+          <button class="btn btn-ghost" type="button" id="clear-order">Wyczyść Zamówienie</button>
+        </div>
+        <p class="label" id="order-text-label" style="margin-top:14px" hidden>Ready to paste into Instagram</p>
+        <textarea class="order-text" id="order-text" readonly hidden aria-label="Order text, ready to paste into Instagram"></textarea>
+        <p class="status" id="order-status" role="status" aria-live="polite"></p>
+        <p class="note" style="margin-top:6px">Jak to działa: dodaj wybrane bluzy i kliknij „Order” (Zamów) na Instagramie. Treść Twojego zamówienia zostanie skopiowana, a profil GOUBi na Instagramie (@wodny_goubi) otworzy się w nowej karcie. Wklej tam skopiowany tekst w wiadomości prywatnej. Jeśli funkcja kopiowania nie działa w Twojej przeglądarce, skopiuj tekst ręcznie z pola powyżej. Ta strona nie obsługuje płatności. Wszystkie zamówienia zostaną wysłane nie później niż do końca 2026 roku. Wszystkie wpłaty są przekazywane na cele charytatywne.</p>
+      </section>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>GOUBi &middot; GULtv &middot; Charytatywny Bankiet Halloween 2026 &middot; Piątek 30.10.2026, 18:00 to 02:00 &middot; GOUBi house, Ground Zero &middot; Wszystkie wpłaty są przekazywane na cele charytatywne.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- tabs ---------- */
+  var VIEWS = ['banquet', 'lists', 'shop',];
+  var tabs = document.querySelectorAll('.tab');
+
+  function show(token, scrollTop) {
+    if (VIEWS.indexOf(token) < 0) { token = 'banquet'; }
+    VIEWS.forEach(function (v) {
+      document.getElementById('view-' + v).hidden = (v !== token);
+    });
+    Array.prototype.forEach.call(tabs, function (t) {
+      if (t.getAttribute('data-go') === token) { t.setAttribute('aria-current', 'page'); }
+      else { t.removeAttribute('aria-current'); }
+    });
+    if (scrollTop) { window.scrollTo(0, 0); }
+  }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-go]');
+    if (!a) { return; }
+    e.preventDefault();
+    var token = a.getAttribute('data-go');
+    show(token, true);
+    try { history.replaceState(null, '', '#' + token); } catch (err) { /* address bar may not follow */ }
+  });
+  window.addEventListener('hashchange', function () { show(location.hash.replace('#', ''), true); });
+  show(location.hash.replace('#', ''), false);
+
+  /* ---------- countdown ---------- */
+  // 30.10.2026 is after the clocks go back (25.10), so Warsaw is UTC+1.
+  var START = new Date('2026-10-30T18:00:00+01:00').getTime();
+  var END = new Date('2026-10-31T02:00:00+01:00').getTime();
+  var cLabel = document.getElementById('count-label');
+  var cVal = document.getElementById('count-val');
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+  function tick() {
+    var now = Date.now();
+    if (now < START) {
+      var s = Math.floor((START - now) / 1000);
+      var d = Math.floor(s / 86400);
+      var h = Math.floor((s % 86400) / 3600);
+      var m = Math.floor((s % 3600) / 60);
+      var sec = s % 60;
+      cLabel.textContent = 'Starts in';
+      cVal.textContent = d + (d === 1 ? ' day ' : ' days ') + pad(h) + ':' + pad(m) + ':' + pad(sec);
+    } else if (now < END) {
+      cLabel.textContent = 'Tonight';
+      cVal.textContent = 'Happening now';
+    } else {
+      cLabel.textContent = 'Fri 30.10.2026';
+      cVal.textContent = 'The night has ended';
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---------- shop order ---------- */
+  var PRICE = 150;
+  var NAMES = { jack: 'Jack', ghost: 'Ghost Mode', bat: 'Midnight Bat' };
+  var cart = [];
+  var listEl = document.getElementById('order-list');
+  var totalEl = document.getElementById('order-total');
+  var pillEl = document.getElementById('cartpill');
+  var statusEl = document.getElementById('order-status');
+  var textEl = document.getElementById('order-text');
+
+  function count() { return cart.reduce(function (n, l) { return n + l.qty; }, 0); }
+
+  function render() {
+    var n = count();
+    var total = n * PRICE;
+    listEl.textContent = '';
+    if (!cart.length) {
+      var li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'Nothing in your order yet. Pick a size and add a hoodie.';
+      listEl.appendChild(li);
+    }
+    cart.forEach(function (l, i) {
+      var row = document.createElement('li');
+      row.className = 'line';
+
+      var name = document.createElement('span');
+      name.className = 'line-name';
+      name.textContent = NAMES[l.id];
+      var size = document.createElement('span');
+      size.className = 'mono';
+      size.textContent = 'Size ' + l.size;
+      name.appendChild(size);
+
+      var qty = document.createElement('span');
+      qty.className = 'qty';
+      var minus = document.createElement('button');
+      minus.type = 'button';
+      minus.textContent = '−';
+      minus.setAttribute('aria-label', 'Remove one ' + NAMES[l.id] + ', size ' + l.size);
+      minus.setAttribute('data-act', 'dec');
+      minus.setAttribute('data-i', String(i));
+      var q = document.createElement('span');
+      q.textContent = String(l.qty);
+      var plus = document.createElement('button');
+      plus.type = 'button';
+      plus.textContent = '+';
+      plus.setAttribute('aria-label', 'Add one ' + NAMES[l.id] + ', size ' + l.size);
+      plus.setAttribute('data-act', 'inc');
+      plus.setAttribute('data-i', String(i));
+      qty.appendChild(minus); qty.appendChild(q); qty.appendChild(plus);
+
+      var sum = document.createElement('span');
+      sum.className = 'line-sum';
+      sum.textContent = (l.qty * PRICE) + ' PLN';
+
+      row.appendChild(name); row.appendChild(qty); row.appendChild(sum);
+      listEl.appendChild(row);
+    });
+    totalEl.textContent = total + ' PLN';
+    pillEl.textContent = 'Order: ' + n + (n === 1 ? ' item' : ' items') + ' · ' + total + ' PLN';
+    var has = cart.length > 0;
+    textEl.value = has ? summary() : '';
+    textEl.hidden = !has;
+    document.getElementById('order-text-label').hidden = !has;
+  }
+
+  function add(id) {
+    var checked = document.querySelector('input[name="size-' + id + '"]:checked');
+    var size = checked ? checked.value : 'M';
+    var found = null;
+    cart.forEach(function (l) { if (l.id === id && l.size === size) { found = l; } });
+    if (found) { found.qty = Math.min(found.qty + 1, 20); }
+    else { cart.push({ id: id, size: size, qty: 1 }); }
+    statusEl.textContent = 'Added ' + NAMES[id] + ', size ' + size + '.';
+    textEl.hidden = true;
+    render();
+  }
+
+  document.querySelectorAll('[data-add]').forEach(function (b) {
+    b.addEventListener('click', function () { add(b.getAttribute('data-add')); });
+  });
+
+  listEl.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-act]');
+    if (!b) { return; }
+    var i = parseInt(b.getAttribute('data-i'), 10);
+    var l = cart[i];
+    if (!l) { return; }
+    if (b.getAttribute('data-act') === 'inc') { l.qty = Math.min(l.qty + 1, 20); }
+    else { l.qty -= 1; if (l.qty <= 0) { cart.splice(i, 1); } }
+    statusEl.textContent = '';
+    render();
+  });
+
+  document.getElementById('clear-order').addEventListener('click', function () {
+    cart = [];
+    textEl.hidden = true;
+    statusEl.textContent = 'Order cleared.';
+    render();
+  });
+
+  function summary() {
+    var lines = ['Hi GOUBi! I would like to order hoodies for the Charity Halloween Banquet:'];
+    cart.forEach(function (l) {
+      lines.push(l.qty + ' x ' + NAMES[l.id] + ', size ' + l.size + ': ' + (l.qty * PRICE) + ' PLN');
+    });
+    lines.push('Total: ' + (count() * PRICE) + ' PLN');
+    return lines.join('\n');
+  }
+
+  document.getElementById('copy-order').addEventListener('click', function () {
+    if (!cart.length) { statusEl.textContent = 'Add a hoodie first.'; return; }
+    var text = summary();
+    function fallback() {
+      textEl.value = text;
+      textEl.hidden = false;
+      textEl.focus();
+      textEl.select();
+      statusEl.textContent = 'Select the text in the box above and copy it.';
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () {
+        statusEl.textContent = 'Order text copied.';
+      }, fallback);
+    } catch (err) { fallback(); }
+  });
+
+  document.getElementById('order-ig').addEventListener('click', function (e) {
+    if (!cart.length) {
+      e.preventDefault();
+      statusEl.textContent = 'Add a hoodie first.';
+      return;
+    }
+    var failMsg = 'Could not copy automatically. Copy the text in the box above and paste it into Instagram.';
+    try {
+      navigator.clipboard.writeText(summary()).then(function () {
+        statusEl.textContent = 'Order text copied. Paste it into a message to @wodny_goubi on Instagram.';
+      }, function () {
+        statusEl.textContent = failMsg;
+      });
+    } catch (err) {
+      statusEl.textContent = failMsg;
+    }
+  });
+
+  render();
+})();
+</script>
+
+</body></html>
